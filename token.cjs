@@ -5,12 +5,14 @@
  * Shopify OAuth token helper – inhaus-coffee.myshopify.com
  *
  * Usage:
- *   SHOPIFY_API_KEY=<key> SHOPIFY_API_SECRET=<secret> node token.cjs
+ *   node token.cjs          # reads credentials from .env
  *
- * Optional env vars:
- *   SHOPIFY_SHOP     – defaults to inhaus-coffee.myshopify.com
- *   SHOPIFY_SCOPES   – comma-separated API scopes (see defaults below)
- *   PORT             – local callback port (default 3000)
+ * Env vars (can be set in .env or in the shell):
+ *   SHOPIFY_API_KEY      – required
+ *   SHOPIFY_API_SECRET   – required
+ *   SHOPIFY_SHOP         – defaults to inhaus-coffee.myshopify.com
+ *   SHOPIFY_SCOPES       – comma-separated API scopes (see defaults below)
+ *   PORT                 – local callback port (default 3000)
  *
  * The granted access token is printed to stdout and saved to .shopify-token.json.
  */
@@ -22,6 +24,22 @@ const fs       = require('fs');
 const path     = require('path');
 const { exec } = require('child_process');
 const { URL }  = require('url');
+
+// ── Load .env (no external dependencies) ─────────────────────────────────────
+(function loadEnv() {
+  const envFile = path.join(__dirname, '.env');
+  if (!fs.existsSync(envFile)) return;
+  const lines = fs.readFileSync(envFile, 'utf8').split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim().replace(/^(['"])(.*)\1$/, '$2');
+    if (!(key in process.env)) process.env[key] = val;
+  }
+})();
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const SHOP          = process.env.SHOPIFY_SHOP    || 'inhaus-coffee.myshopify.com';
