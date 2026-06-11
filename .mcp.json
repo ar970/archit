@@ -2,7 +2,7 @@
   "mcpServers": {
     "composio": {
       "type": "http",
-      "url": "https://connect.composio.dev/mcp?apiKey=ck_7srKi7iZgGHTcgQg2AYB"
+      "url": "https://mcp.composio.dev/api_key/ck_7srKi7iZgGHTcgQg2AYB/mcp"
     }
   }
 }
